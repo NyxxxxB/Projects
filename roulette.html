@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Roulette</title>
+    <link rel="stylesheet" href="roulette.css">
+</head>
+<body>
+    <h1>Casino Roulette</h1>
+    <label id="points">Points:</label><br> <br>
+    <label id="slot_1" class="slot">#</label>
+    <label id="slot_2" class="slot">#</label>
+    <label id="slot_3" class="slot">#</label> <br> <br>
+
+    <button id="gen_b" onclick="Generate()">Generate</button> <br> <br>
+    <button id="reset_b" onclick="Reset()">Reset Points</button> <br> <br>
+    <button id="autoRoll" class="upgrades" onclick="autoRoll()">Buy Generator 1(5s) - 100 Points</button>
+    <button id="autoRoll2" class="upgrades" onclick="autoRoll2()">Upgrade Generator(3s) - 1000 Points</button>
+    <script src="roulette.js"></script>
+</body>
+</html>

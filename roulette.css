@@ -1,0 +1,41 @@
+h1{
+    background-color: gray;
+    border-color:black;
+    border-radius: 4px;
+    color: white;
+    border-style:solid;
+}
+.slot{
+    border-style: double;
+    border-color:black;
+    color: black;
+    background-color: aquamarine;
+    font-size: 40px;
+}
+#points{
+    font-size: 20px;
+}
+
+.upgrades{
+    position:absolute;
+    top:280px;
+}
+
+#reset_b{
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+}
+
+#gen_b{
+    width: 120px;
+    height: 30px;
+    border-radius: 4px;
+    border-color:black;
+    background-color: rgb(30, 30, 30);
+    color: rgb(0, 153, 0);
+}
+
+button:hover{
+    cursor:pointer;
+}
