@@ -1,127 +1,211 @@
-let slot_1 = document.getElementById("slot_1");
-let slot_2 = document.getElementById("slot_2");
-let slot_3 = document.getElementById("slot_3");
-let points = 0;
-let point_talk = "Points: ";
-let point_r;
-let result;
-let slot_1_rng;
-let slot_2_rng;
-let slot_3_rng;
-let roll_b = document.getElementById("autoRoll");
-let roll_b2 = document.getElementById("autoRoll2")
-roll_b2.hidden = true;
-const figures = {
-    0: 1,
-    1: 2,
-    2: 3,
-    3: 4,
-    4: 5,
-    5: 6,
-    6: 7,
-    7: "X",
-    8: "Zé da Manga!"
-}
+"use strict";
+let s_1;
+let s_2;
+let s_3;
+let buy_1cost = 100;
+let upg_1_bought = false;
+let baseAutoRoll;
+let baseAutoRoll2;
+let baseAutoRoll3;
+let upg_2_bought = false;
+let upg_3_bought = false;
+document.querySelector("#upg_3").hidden = true;
+document.querySelector("#upg_2").hidden = true;
+let Game = {
+    points: 0,
+    result: 0,
+    digit_cap: 10,
+    multiplier: 1,
+    start: function(){
+        this.load();
+        this.initGenButton();
+        this.buy1();
+        this.initUpgrades();
+        this.initTimer();
+    },
+    refresh: function(){
+        document.querySelector("#points").innerHTML = Game.points;
+        document.querySelector("#f_points").innerHTML = Game.result;
+        document.querySelector("#slot_1").innerHTML = s_1;
+        document.querySelector("#slot_2").innerHTML = s_2;
+        document.querySelector("#slot_3").innerHTML = s_3;
+        document.querySelector("#digit_l").innerHTML = Game.digit_cap - 1;
+    },
+    randomize: function() {
+        s_1 = Math.floor(Math.random() * Game.digit_cap);
+        s_2 = Math.floor(Math.random() * Game.digit_cap);
+        s_3 = Math.floor(Math.random() * Game.digit_cap);
+        Game.result += s_1;
+        Game.result += s_2;
+        Game.result += s_3;
+    },
+    initGenButton() {
+        document.querySelector("#gen_b").addEventListener('click', function() {
+            Game.points += 10000;
+            Game.result = 0;
+            Game.randomize();
+            Game.result = Game.result * Game.multiplier;
+            Game.points += Game.result;
+            Game.refresh();
+        })
+    },
+    initUpgrades() {
+        document.querySelector("#upg_1").addEventListener('click', function(){
+            if(Game.points >= 1000){
+                baseAutoRoll = setInterval(function(){
+                    Game.points += Game.result;
+                    Game.refresh();
+                }, 5000);
+                upg_1_bought = true;
+                Game.points -= 1000;
+                document.querySelector("#upg_1").hidden = true;
+                document.querySelector("#upg_2").hidden = false;
+                document.querySelector("#upg_2").disabled = false;
+                Game.refresh();
+            }
+        }),
+        document.querySelector("#upg_2").addEventListener('click',function(){
+            if(Game.points >= 5000){
+                clearInterval(baseAutoRoll);
+                baseAutoRoll2 = setInterval(function(){
+                    Game.points += Game.result;
+                    Game.refresh();
+                }, 3000);
+                Game.points -= 5000;
+                upg_2_bought = true;
+                document.querySelector("#upg_2").hidden = true;
+                document.querySelector("#upg_3").hidden = false;
+                Game.refresh();
+            }
+        }),
+        document.querySelector("#upg_3").addEventListener('click', function(){
+            if(Game.points >= 20000){
+                clearInterval(baseAutoRoll2);
+                baseAutoRoll3 = setInterval(function() {
+                    Game.points += Game.result;
+                    Game.refresh();
+                }, 1000);
+                Game.points -= 20000;
+                document.querySelector("#upg_3").hidden = true;
+                Game.refresh();
+            }
+        }),
+        document.querySelector("#upg_4").addEventListener('click',function(){
+            if(Game.points >= 10000){
+                Game.multiplier * 2;
+                Game.points -= 10000;
+                document.querySelector("#upg_4").hidden = true;
+            }
+        })
+    },
+    buy1() {
+        document.querySelector("#buy_1").addEventListener('click', function(){
+            if(Game.points >= buy_1cost){
+                buy1_bought += 1;
+                Game.points -= buy_1cost;
+                Game.digit_cap = buy1_bought + 10;
+                buy_1cost = Math.floor(100 * 1.15 * buy1_bought);
+                document.querySelector("#buy_1").innerHTML = "Increase Digit Limit - "+buy_1cost+" Points "+"("+buy1_bought+")";
+                Game.refresh();
+            }
+        })
+    },
+    initTimer(){
+        setInterval(function(){
+            Game.save();
+        },5000)
+    },
+    save: function() {
+        localStorage.setItem('save', JSON.stringify({
+            'points' : Game.points,
+            'mult' : Game.multiplier,
+            's1' : s_1,
+            's2' : s_2,
+            's3' : s_3,
+            'b1' : buy1_bought,
+            'b1cost' : buy_1cost,
+            'b1html' : document.querySelector("#buy_1").innerHTML,
+            'result' : Game.result,
+            'digitcap' : Game.digit_cap,
+            'upg1b' : upg_1_bought,
+            'upg2b' : upg_2_bought,
+            'upg3b' : upg_3_bought,
+        }));
+        console.log("saving");
+    },
+    load: function() {
+        let save = localStorage.getItem('save');
+        if(save !== null){
+            save = JSON.parse(save);
+            s_1 = save.s1;
+            s_2 = save.s2;
+            s_3 = save.s3;
+            buy1_bought = save.b1;
+            buy_1cost = save.b1cost;
+            upg_1_bought = save.upg1b;
+            upg_2_bought = save.upg2b;
+            upg_3_bought = save.upg3b;
+            Game.digit_cap = save.digitcap;
+            Game.result = save.result;
+            Game.points = save.points;
+            Game.refresh();
+            if(document.querySelector("#buy_1").innerHTML != undefined){
+                document.querySelector("#buy_1").innerHTML = save.b1html;
+            }
+            else{
+                document.querySelector("#buy_1").innerHTML = "Increase Digit Limit - "+buy_1cost+" Points "+"("+buy1_bought+")";
+            }
+            if(Game.multiplier == Number){
+                Game.multiplier = save.mult;
+                document.querySelector("#upg_4").hidden = true;
+            }
+        }
+        else{
+            buy1_bought = 0;
+        }
+        if(buy_1cost == undefined){
+            buy_1cost = Math.floor(100 * 1.15 * buy1_bought);
+        }
+        document.querySelector("#hard_reset").addEventListener('click', function() {
+            if(confirm("Are you sure you wanna reset the ENTIRE game?")){
+                localStorage.removeItem('save');
+                location.reload();
+            }
+        })
+        if(upg_3_bought){
+            baseAutoRoll3 = setInterval(function() {
+                Game.points += Game.result;
+                Game.refresh();
+            }, 1000);
+            document.querySelector("#upg_3").hidden = true;
+            document.querySelector("#upg_2").hidden = true;
+            document.querySelector("#upg_1").hidden = true;
+            Game.refresh();
+        }
+        else if(upg_2_bought){
+            baseAutoRoll2 = setInterval(function(){
+                Game.points += Game.result;
+                Game.refresh();
+            }, 3000);
+            document.querySelector("#upg_2").hidden = true;
+            document.querySelector("#upg_1").hidden = true;
+            Game.refresh();
+        }
+        else if(upg_1_bought){
+            baseAutoRoll = setInterval(function(){
+                Game.points += Game.result;
+                Game.refresh();
+            }, 5000);
+            document.querySelector("#upg_1").hidden = true;
+            document.querySelector("#upg_2").hidden = false;
+            Game.refresh();
+        }   
+    },
+};
+Game.start();
 
-let results = [];
-
-function Generate(){
-    results = [];
-
-    slot_1_rng = figures[Math.floor(Math.random() * 9)];
-    slot_2_rng = figures[Math.floor(Math.random() * 9)];
-    slot_3_rng = figures[Math.floor(Math.random() * 9)];
-
-    slot_1.innerHTML = slot_1_rng;
-    slot_2.innerHTML = slot_2_rng;
-    slot_3.innerHTML = slot_3_rng;
-
-    slot_1_value = slot_1_rng;
-    slot_2_value = slot_2_rng;
-    slot_3_value = slot_3_rng;
-
-    if(slot_1_value == "Zé da Manga!"){
-        slot_1_value = 20;
-    }
-    else if(slot_1_value == "X"){
-    slot_1_value = 10;
-    }
-
-    if(slot_2_value == "Zé da Manga!"){
-        slot_2_value = 20;
-    }
-    if(slot_2_value == "X"){
-    slot_2_value = 10;
-    }
-
-    if(slot_3_value == "Zé da Manga!"){
-        slot_3_value = 20;
-    }
-    else if(slot_3_value == "X"){
-    slot_3_value = 10;
-    }
-
-    results.push(Number(slot_1_value));
-    results.push(Number(slot_2_value));
-    results.push(Number(slot_3_value));
-
-    result = results[0] += results[1] += results[2];
-
-    points += result;
-    Update();
-    
-}
-
-function Update(){
-    point_r = point_talk + points.toString();
-    document.getElementById("points").innerHTML = (point_r);
-}
-
-function Reset(){
-    points = 0;
-    Update();
-    
-}
-
-function autoRoll(){
-    if(points >= 100){
-        points -= 100;
-        roll_b.disabled = true;
-        p_roll = setInterval(Roll, 5000);
-        Update();
-        roll_b.hidden = true;
-        roll_b2.hidden = false;
-    }
-    else{
-        roll_b.innerHTML = "You Need 100 Points!";
-        setTimeout(function() {
-            roll_b.innerHTML = "Buy Generator 1(5s) - 100 Points";
-        }, 3000);
-    }
-}
-
-function autoRoll2(){
-    if(points >= 1000){
-        points -= 1000;
-        roll_b2.disabled = true;
-        p_roll2 = setInterval(Roll, 3000);
-        clearInterval(p_roll);
-        Update();
-        roll_b2.hidden = true;
-        //roll_b2.hidden = false;
-    }
-    else{
-        roll_b2.innerHTML = "You Need 1000 Points!";
-        setTimeout(function() {
-            roll_b2.innerHTML = "Upgrade Generator(3s) - 1000 Points";
-        }, 3000);
-    }
-}
-
-function Roll(){
-    points += result;
-    Update();
-}
 
 
-// x2 points, more figures, ascension, 4th slot, 
+
+// x2 points, ascension, 4th slot, 
+
