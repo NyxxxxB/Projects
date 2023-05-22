@@ -17,14 +17,7 @@ h1{
 }
 
 .upgrades{
-    position:absolute;
-    top:280px;
-}
-
-#reset_b{
-    position: absolute;
-    bottom: 1px;
-    right: 1px;
+    width: 120px;
 }
 
 #gen_b{
@@ -36,6 +29,34 @@ h1{
     color: rgb(0, 153, 0);
 }
 
+#gen_b:disabled{
+    width: 120px;
+    height: 30px;
+    border-radius: 4px;
+    border-color:black;
+    background-color: gray;
+    color: black;
+}
+
 button:hover{
     cursor:pointer;
+}
+
+#f_points{
+    color:white;
+}
+#upgrades{
+    display:grid;
+}
+
+body{
+    background-color: black;
+    color:white;
+}
+
+#hard_reset{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    color:red;
 }
